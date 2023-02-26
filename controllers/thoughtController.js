@@ -17,11 +17,13 @@ const getSingleThought = (req,res) => {
 
 
 const createThought = (req,res) => {
+    console.log(req.body.id)
     Thoughts.create(req.body)
     .then((thought)=> {
+        console.log
         return User.findOneAndUpdate(
-            { _id : req.params._id },
-            { $push : { thoughts : thought._id }},
+            { _id : req.body.id },
+            { $push : { thoughts : thought.id }},
             { new : true }
         )
     })
@@ -74,3 +76,45 @@ const updateThought = (req,res)=> {
         res.status(500).json(err);
     })
 }
+
+const createReaction = (req,res)=> {
+    Thoughts.findOneAndUpdate(
+        { _id: req.params._id },
+        { $push: { reactions: req.body } },
+        { runValidators: true, new: true }
+    )
+    .then((thought)=>{
+        if (thought)
+            res.json(thought)
+        else
+            res.status(404).json({ message: "No thought with that id" });
+    })
+    .catch((err)=>{
+        res.status(500).json(err);
+    })
+}
+
+const deleteReaction = (req, res) => {
+    Thoughts.findOneAndUpdate(
+      { _id: req.params._id },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
+      { runValidators: true, new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: "No thought with this id!" })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+  }
+
+
+  module.exports = {
+    getThoughts,
+    getSingleThought,
+    createThought,
+    deleteThought,
+    updateThought,
+    createReaction,
+    deleteReaction,
+  };

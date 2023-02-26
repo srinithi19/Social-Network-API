@@ -13,7 +13,7 @@ const getUsers = (req,res) => {
 }
 
 const getSingleUser = (req,res) => {
-    User.findOne({ _id: req.params._id })
+    User.findOne({ _id: req.params.id })
     .populate("thoughts")
     .populate("friends")
     .select("-__v")
@@ -36,7 +36,7 @@ const createUser = (req,res) => {
 
 const updateUser = (req,res) => {
     User.findOneAndUpdate(
-        {_id: req.params._id },
+        {_id: req.params.id },
         { $set : req.body },
         { runValidators : true,
         new : true })
@@ -52,7 +52,7 @@ const updateUser = (req,res) => {
 }
 
 const deleteUser = (req,res) => {
-    User.findOneAndDelete({ _id: req.params._id })
+    User.findOneAndDelete({ _id: req.params.id })
     .then((user) => {
         !user 
             ? res.status(404).json({ message: "No user w that id" }) 
@@ -66,7 +66,7 @@ const deleteUser = (req,res) => {
 
 const addFriend = (req,res)=> {
     User.findOneAndUpdate(
-        { _id: req.params._id },
+        { _id: req.params.id },
         { $push: { friends: req.params.friendsId } },
         { runValidators: true, new: true }
     )
@@ -83,7 +83,7 @@ const addFriend = (req,res)=> {
 
 const deleteFriend = (req,res)=> {
     User.findOneAndUpdate(
-        { _id: req.params._id },
+        { _id: req.params.id },
         { $pull: { friends: req.params.friendsId } },
         { runValidators: true, new: true }
     ).then((user)=> {
