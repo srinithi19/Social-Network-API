@@ -63,3 +63,46 @@ const deleteUser = (req,res) => {
     })
     .catch((err) => res.status(500).json(err));
 }
+
+const addFriend = (req,res)=> {
+    User.findOneAndUpdate(
+        { _id: req.params._id },
+        { $push: { friends: req.params.friendsId } },
+        { runValidators: true, new: true }
+    )
+    .then((user)=> {
+        if(!user) {
+            res.status(404).json({ message: "no user with this id" });
+        }
+        else {
+            res.json(user)
+        }
+    })
+    .catch((err) => res.status(500).json(err));
+}
+
+const deleteFriend = (req,res)=> {
+    User.findOneAndUpdate(
+        { _id: req.params._id },
+        { $pull: { friends: req.params.friendsId } },
+        { runValidators: true, new: true }
+    ).then((user)=> {
+        if(!user) {
+            res.status(404).json({ message: "no user with this id" });
+        }
+        else {
+            res.json(user)
+        }
+    })
+    .catch((err) => res.status(500).json(err));
+}
+
+module.exports = {
+    getUsers,
+    getSingleUser,
+    createUser,
+    deleteUser,
+    updateUser,
+    addFriend,
+    deleteFriend
+}
