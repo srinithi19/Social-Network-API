@@ -39,15 +39,15 @@ const createThought = (req,res) => {
 }
 
 const deleteThought = (req,res)=> {
-    Thoughts.findOneAndDelete({ _id : req.params._id })
+    Thoughts.findOneAndDelete({ _id : req.params.id })
     .then((thought)=>{
         if (!thought)
         res.status(404).json({ message: "No thought with that id" });
     })
     return User.findOneAndUpdate(
-        { _id : req.params._id },
-        { $pull : { thoughts : req.params._id}},
-        {new : True}
+        { _id : req.body.id },
+        { $pull : { thoughts : req.params.id}},
+        {new : true}
     )
     .then((user)=>{
         if(user)
@@ -62,9 +62,9 @@ const deleteThought = (req,res)=> {
 
 const updateThought = (req,res)=> {
     Thoughts.findOneAndUpdate(
-        { _id : req.params._id },
+        { _id : req.params.id },
         { $set : req.body },
-        {new : True}
+        { new : true }
     )
     .then((thought)=>{
         if (thought)
@@ -79,7 +79,7 @@ const updateThought = (req,res)=> {
 
 const createReaction = (req,res)=> {
     Thoughts.findOneAndUpdate(
-        { _id: req.params._id },
+        { _id: req.params.id },
         { $push: { reactions: req.body } },
         { runValidators: true, new: true }
     )
@@ -95,8 +95,11 @@ const createReaction = (req,res)=> {
 }
 
 const deleteReaction = (req, res) => {
+    console.log(req.params.id)
+    console.log(req.params.reactionId)
+
     Thoughts.findOneAndUpdate(
-      { _id: req.params._id },
+      { _id: req.params.id },
       { $pull: { reactions: { reactionId: req.params.reactionId } } },
       { runValidators: true, new: true }
     )
